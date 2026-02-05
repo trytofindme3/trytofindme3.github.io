@@ -1,11 +1,346 @@
-<!DOCTYPE html>
-<html>
-<title>EcoBot</title>
-  
-  
-  
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EcoBot – Chatbot/Voicebot (Cvičení)</title>
+  <meta name="description" content="Cvičení – pravidlový chatbot EcoBot: účel, osobnost, báze znalostí, spuštění, reflexe." />
+
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.55);
+      --accent: #7c5cff;
+      --accent2: #2ee59d;
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+      --max: 980px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(124,92,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(46,229,157,.18), transparent 55%),
+        radial-gradient(700px 420px at 50% 90%, rgba(255,255,255,.06), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a{ color: var(--text); }
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 16px 80px;
+    }
+
+    header{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 18px 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width: 260px;
+    }
+    .title h1{
+      font-size: 20px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+
+    .badges{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .badge{
+      padding: 8px 10px;
+      border:1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12.5px;
+      color: var(--muted);
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+    .badge strong{ color: var(--text); font-weight: 600; }
+
+    .hero{
+      margin-top: 16px;
+      padding: 18px;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.05);
+      display:grid;
+      gap: 10px;
+    }
+    .hero .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .note{
+      color: var(--muted);
+      font-size: 13.5px;
+      margin: 0;
+    }
+    .pill{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.22);
+      color: var(--muted);
+      font-size: 13px;
+      background: rgba(255,255,255,.03);
+    }
+    .pill b{ color: var(--text); }
+
+    main{
+      margin-top: 16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .card{
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.05);
+      box-shadow: 0 12px 35px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+
+    .card .head{
+      padding: 14px 16px;
+      background: rgba(255,255,255,.04);
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .card .head h2{
+      margin:0;
+      font-size: 15.5px;
+      letter-spacing:.2px;
+    }
+    .card .head span{
+      font-size: 12px;
+      color: var(--muted2);
+      border:1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      white-space:nowrap;
+    }
+
+    .card .body{
+      padding: 14px 16px 16px;
+      color: var(--text);
+    }
+    .card .body p{ margin: 0 0 10px; color: var(--muted); }
+    .card .body ul{ margin: 8px 0 0 18px; color: var(--muted); }
+    .card .body li{ margin: 6px 0; }
+
+    .qa{
+      display:grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .qa .item{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius2);
+      padding: 12px 12px;
+    }
+    .q{
+      margin:0 0 4px;
+      font-weight: 650;
+      color: rgba(255,255,255,.92);
+      font-size: 13.5px;
+    }
+    .a{
+      margin:0;
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+
+    .callout{
+      border: 1px solid rgba(124,92,255,.35);
+      background: linear-gradient(180deg, rgba(124,92,255,.14), rgba(255,255,255,.03));
+      border-radius: var(--radius2);
+      padding: 12px 12px;
+      margin-top: 10px;
+    }
+    .callout .q{ color: var(--text); }
+    .callout .a{ color: rgba(255,255,255,.78); }
+
+    footer{
+      margin-top: 18px;
+      color: var(--muted2);
+      font-size: 12.5px;
+      text-align:center;
+    }
+
+    /* Desktop: two columns */
+    @media (min-width: 880px){
+      main{
+        grid-template-columns: 1.2fr .8fr;
+        align-items:start;
+      }
+      .span2{ grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+
 <body>
-<!-- Start of ChatBot (www.chatbot.com) code -->
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>EcoBot – Chatbot/Voicebot (Cvičení)</h1>
+        <p>Pravidlový chatbot: 4–5 odpovědí + fallback + ukončení dialogu</p>
+      </div>
+
+      <div class="badges">
+        <div class="badge"><strong>Nástroj:</strong> Chatbot.com</div>
+        <div class="badge"><strong>Typ:</strong> rule-based</div>
+        <div class="badge"><strong>Jazyk:</strong> čeština</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT COLUMN -->
+      <section class="card">
+        <div class="head">
+          <h2>Popis cvičení</h2>
+          <span>Cíl • Nástroj • Báze • Osobnost</span>
+        </div>
+        <div class="body">
+          <p><b>Název chatbota:</b> EcoBot – ekologický poradce</p>
+
+          <p><b>Cíl / účel chatbota:</b><br>
+            Cílem chatbota EcoBot je pomáhat zákazníkům a široké veřejnosti s orientací v ekologických produktech a úsporách energie.
+            Chatbot poskytuje rychlé odpovědi na nejčastější dotazy (4–5 předdefinovaných odpovědí) a směruje uživatele k relevantním informacím
+            bez nutnosti kontaktovat zákaznickou podporu.
+          </p>
+
+          <p><b>Použitý nástroj:</b><br>
+            Chatbot byl vytvořen pomocí online no-code platformy <b>Chatbot.com</b>, která umožňuje tvorbu pravidlového (rule-based) chatbota bez programování.
+            Scénář je sestaven z bloků, tlačítek a předem připravených odpovědí.
+          </p>
+
+          <p><b>Zdroj informací (báze znalostí):</b></p>
+          <ul>
+            <li>firemní FAQ (často kladené dotazy zákazníků)</li>
+            <li>základní informace o ekologických produktech (např. solární panely, chytré termostaty)</li>
+            <li>obecné informace o možnostech státních dotací (např. Nová zelená úsporám)</li>
+            <li>informace o reklamačním procesu společnosti</li>
+          </ul>
+
+          <p style="margin-top:10px;"><b>Osobnost chatbota:</b></p>
+          <ul>
+            <li><b>Jméno:</b> EcoBot</li>
+            <li><b>Styl komunikace:</b> přívětivý, lidský, podpůrný</li>
+            <li><b>Tón:</b> jednoduchý, srozumitelný a stručný</li>
+            <li><b>Cílová skupina:</b> zákazníci a široká veřejnost</li>
+          </ul>
+
+          <p style="margin-top:10px;"><b>Spuštění (jak ho použít):</b><br>
+            Chatbot je dostupný na webových stránkách společnosti. Po otevření webu se zobrazí chatovací okno,
+            kde uživatel vybere možnost (tlačítka) nebo napíše dotaz. Chatbot odpoví podle předdefinovaných pravidel.
+          </p>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <section class="card">
+        <div class="head">
+          <h2>Odpovědi (4–5) + Fallback + Konec</h2>
+          <span>Q&A</span>
+        </div>
+        <div class="body">
+          <div class="qa">
+            <div class="item">
+              <p class="q">1) Jaký produkt mi pomůže ušetřit energii?</p>
+              <p class="a">Doporučuji solární panely nebo chytré termostaty, které pomáhají snížit spotřebu energie.</p>
+            </div>
+
+            <div class="item">
+              <p class="q">2) Jak mohu požádat o dotaci na solární panely?</p>
+              <p class="a">O dotaci lze požádat prostřednictvím programu Nová zelená úsporám. Mohu vám poskytnout základní postup.</p>
+            </div>
+
+            <div class="item">
+              <p class="q">3) Jak mohu reklamovat zboží?</p>
+              <p class="a">Reklamaci lze podat online pomocí reklamačního formuláře nebo osobně na pobočce společnosti.</p>
+            </div>
+
+            <div class="item">
+              <p class="q">4) Jak vás mohu kontaktovat?</p>
+              <p class="a">Kontaktovat nás můžete e-mailem, telefonicky nebo prostřednictvím tohoto chatu.</p>
+            </div>
+
+            <div class="callout">
+              <p class="q">Fallback (nesprávný vstup)</p>
+              <p class="a">„Omlouvám se, tomu nerozumím. Zkuste prosím vybrat jednu z možností nebo otázku napsat jinak.“</p>
+            </div>
+
+            <div class="callout" style="border-color: rgba(46,229,157,.35); background: linear-gradient(180deg, rgba(46,229,157,.12), rgba(255,255,255,.03));">
+              <p class="q">Ukončení dialogu (konec)</p>
+              <p class="a">„Děkuji za dotaz 😊 Kdykoli budete potřebovat, napište mi znovu.“</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FULL WIDTH -->
+      <section class="card span2">
+        <div class="head">
+          <h2>Reflexe</h2>
+          <span>2 body</span>
+        </div>
+        <div class="body">
+          <ul>
+            <li><b>Co se povedlo:</b> přehledné menu a rychlé odpovědi na typické dotazy; chatbot reaguje podle předdefinovaných pravidel.</li>
+            <li><b>Co bylo náročné:</b> správně zvolit nejčastější dotazy a napsat stručné odpovědi tak, aby byly srozumitelné pro uživatele.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Ashimov Olzhas 41912 2026
+    </footer>
+  </div>
+
+  <!-- Start of ChatBot (www.chatbot.com) code -->
 <script>
   window.__ow = window.__ow || {};
   window.__ow.organizationId = "73995300-d72b-4dc3-b680-e920ec32be77";
@@ -14,10 +349,8 @@
   window.__ow.product_name = "chatbot";   
   ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[OpenWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.openwidget.com/openwidget.js",t.head.appendChild(n)}};!n.__ow.asyncInit&&e.init(),n.OpenWidget=n.OpenWidget||e}(window,document,[].slice))
 </script>
-  
 <noscript>You need to <a href="https://www.chatbot.com/help/chat-widget/enable-javascript-in-your-browser/" rel="noopener nofollow">enable JavaScript</a> in order to use the AI chatbot tool powered by <a href="https://www.chatbot.com/" rel="noopener nofollow" target="_blank">ChatBot</a></noscript>
 <!-- End of ChatBot code -->
 
 </body>
 </html>
-
